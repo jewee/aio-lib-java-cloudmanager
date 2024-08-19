@@ -23,7 +23,7 @@ package com.adobe.aio.cloudmanager;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Pipeline API.

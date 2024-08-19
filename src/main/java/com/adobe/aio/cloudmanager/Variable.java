@@ -20,7 +20,7 @@ package com.adobe.aio.cloudmanager;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.adobe.aio.cloudmanager.impl.VariableImpl;
 import lombok.Getter;

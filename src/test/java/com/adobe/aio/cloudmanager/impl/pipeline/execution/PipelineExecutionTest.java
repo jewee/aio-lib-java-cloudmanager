@@ -67,7 +67,8 @@ import org.mockserver.verify.VerificationTimes;
 
 import static com.adobe.aio.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.*;
 import static org.mockserver.model.HttpResponse.*;
 import static org.mockserver.model.HttpStatusCode.*;
@@ -101,7 +102,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(redirect).respond(
         response()
             .withStatusCode(OK_200.code())
-            .withBody(json(String.format("{ \"redirect\": \"%s/logs/special.txt\" }", baseUrl)))
+            .withBody(json("{ \"redirect\": \"%s/logs/special.txt\" }".formatted(baseUrl)))
     );
     return redirect;
   }
@@ -115,7 +116,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(redirect).respond(
         response()
             .withStatusCode(OK_200.code())
-            .withBody(String.format("{ \"redirect\": \"%s/logs/somethingspecial.txt\" }", baseUrl))
+            .withBody("{ \"redirect\": \"%s/logs/somethingspecial.txt\" }".formatted(baseUrl))
     );
     return redirect;
   }
@@ -139,7 +140,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution");
     client.when(get).respond(response().withStatusCode(INTERNAL_SERVER_ERROR_500.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.getCurrent("1", "1"), "Exception was thrown.");
-    assertEquals(String.format("Cannot get execution: %s/api/program/1/pipeline/1/execution (500 Unknown).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get execution: %s/api/program/1/pipeline/1/execution (500 Unknown).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -191,7 +192,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(put).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.start("1", "1"), "Exception thrown");
-    assertEquals(String.format("Cannot create execution: %s/api/program/1/pipeline/1/execution (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot create execution: %s/api/program/1/pipeline/1/execution (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(put);
     client.clear(put);
   }
@@ -246,7 +247,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.get("1", "1", "1"), "Exception thrown");
-    assertEquals(String.format("Cannot get execution: %s/api/program/1/pipeline/1/execution/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot get execution: %s/api/program/1/pipeline/1/execution/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(get);
     client.clear(get);
   }
@@ -399,7 +400,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(put).respond(response().withStatusCode(FORBIDDEN_403.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.advance("1", "1", "1"), "Exception thrown");
-    assertEquals(String.format("Cannot advance execution: %s/api/program/1/pipeline/1/execution/1/phase/4/step/3/advance (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot advance execution: %s/api/program/1/pipeline/1/execution/1/phase/4/step/3/advance (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(get, put);
     client.clear(get);
     client.clear(put);
@@ -499,7 +500,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(put).respond(response().withStatusCode(FORBIDDEN_403.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.cancel("1", "1", "1"), "Exception thrown");
-    assertEquals(String.format("Cannot cancel execution: %s/api/program/1/pipeline/1/execution/1/phase/4/step/3/cancel (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot cancel execution: %s/api/program/1/pipeline/1/execution/1/phase/4/step/3/cancel (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(get, put);
     client.clear(get);
     client.clear(put);
@@ -648,7 +649,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(redirect).respond(response().withStatusCode(FORBIDDEN_403.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.getStepLogDownloadUrl("1", "1", "1", StepAction.build), "Exception thrown");
-    assertEquals(String.format("Cannot get logs: %s/api/program/1/pipeline/1/execution/1/phase/2/step/1/logs (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get logs: %s/api/program/1/pipeline/1/execution/1/phase/2/step/1/logs (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get, redirect);
     client.clear(get);
     client.clear(redirect);
@@ -692,7 +693,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     HttpRequest redirect = setupDownloadUrl(sessionId, "/api/program/1/pipeline/1/execution/1/phase/2/step/1/logs");
 
     com.adobe.aio.cloudmanager.PipelineExecution execution = new PipelineExecutionImpl(mock, executionApi);
-    assertEquals(String.format("%s/logs/special.txt", baseUrl), executionApi.getStepLogDownloadUrl(execution, StepAction.build));
+    assertEquals("%s/logs/special.txt".formatted(baseUrl), executionApi.getStepLogDownloadUrl(execution, StepAction.build));
     client.verify(get, redirect);
     client.clear(get);
     client.clear(redirect);
@@ -711,7 +712,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     HttpRequest redirect = setupDownloadUrlSpecial(sessionId);
     com.adobe.aio.cloudmanager.PipelineExecution execution = new PipelineExecutionImpl(mock, executionApi);
 
-    assertEquals(String.format("%s/logs/somethingspecial.txt", baseUrl), executionApi.getStepLogDownloadUrl(execution, StepAction.build, "somethingspecial"));
+    assertEquals("%s/logs/somethingspecial.txt".formatted(baseUrl), executionApi.getStepLogDownloadUrl(execution, StepAction.build, "somethingspecial"));
     client.verify(get, redirect);
     client.clear(get);
     client.clear(redirect);
@@ -731,7 +732,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(get).respond(response().withStatusCode(FORBIDDEN_403.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.getQualityGateResults(new PipelineExecutionImpl(mock, executionApi), StepAction.codeQuality), "Exception thrown.");
-    assertEquals(String.format("Cannot get metrics: %s/api/program/1/pipeline/1/execution/1/phase/2/step/2/metrics (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get metrics: %s/api/program/1/pipeline/1/execution/1/phase/2/step/2/metrics (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
 
     client.verify(exec, get);
     client.clear(exec);
@@ -793,7 +794,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     HttpRequest list = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/executions");
     client.when(list).respond(response().withStatusCode(FORBIDDEN_403.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.list("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot list executions: %s/api/program/1/pipeline/1/executions (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list executions: %s/api/program/1/pipeline/1/executions (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
@@ -851,7 +852,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
         .withQueryStringParameter("limit", "10");
     client.when(list).respond(response().withStatusCode(FORBIDDEN_403.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.list("1", "1", 10), "Exception thrown.");
-    assertEquals(String.format("Cannot list executions: %s/api/program/1/pipeline/1/executions?start=0&limit=10 (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list executions: %s/api/program/1/pipeline/1/executions?start=0&limit=10 (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
@@ -970,7 +971,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     HttpRequest list = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/1/step/1/artifacts");
     client.when(list).respond(response().withStatusCode(FORBIDDEN_403.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.listArtifacts(step), "Exception thrown.");
-    assertEquals(String.format("Cannot list step artifacts: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1/artifacts (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list step artifacts: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1/artifacts (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
@@ -1033,7 +1034,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/1/step/1/artifact/1");
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> executionApi.getArtifactDownloadUrl(step, "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot get step artifact: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1/artifact/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get step artifact: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1/artifact/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -1070,7 +1071,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     HttpRequest get = setupDownloadUrl(sessionId, "/api/program/1/pipeline/1/execution/1/phase/1/step/1/artifact/1");
     client.when(get).respond(response().withStatusCode(OK_200.code()).withBody(json("{}")));
     String redirect = executionApi.getArtifactDownloadUrl(step, "1");
-    assertEquals(String.format("%s/logs/special.txt", baseUrl), redirect, "Response was correct.");
+    assertEquals("%s/logs/special.txt".formatted(baseUrl), redirect, "Response was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -1100,7 +1101,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(get).respond(response().withBody(GET_BODY));
 
     HttpRequest getRedirect = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/2/step/1/logs");
-    client.when(getRedirect).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/build.txt\" }", baseUrl))));
+    client.when(getRedirect).respond(response().withBody(json("{ \"redirect\": \"%s/logs/build.txt\" }".formatted(baseUrl))));
 
     HttpRequest getFile = request().withMethod("GET").withPath("/logs/build.txt");
     client.when(getFile).respond(response().withStatusCode(NOT_FOUND_404.code()));
@@ -1110,7 +1111,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     final File outputDir = Files.createTempDirectory("log-output").toFile();
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> step.getLog(outputDir), "Exception thrown.");
-    assertEquals(String.format("Cannot download log for pipeline 1, execution 1, step 'build' to %s/pipeline-1-execution-1-build.txt (Cause: java.io.FileNotFoundException).", outputDir), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot download log for pipeline 1, execution 1, step 'build' to %s/pipeline-1-execution-1-build.txt (Cause: java.io.FileNotFoundException).".formatted(outputDir), exception.getMessage(), "Message was correct");
 
     client.verify(get);
     client.verify(getRedirect);
@@ -1129,7 +1130,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(get).respond(response().withBody(GET_BODY));
 
     HttpRequest getRedirect = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/2/step/1/logs");
-    client.when(getRedirect).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/build.txt\" }", baseUrl))));
+    client.when(getRedirect).respond(response().withBody(json("{ \"redirect\": \"%s/logs/build.txt\" }".formatted(baseUrl))));
 
     HttpRequest getFile = request().withMethod("GET").withPath("/logs/build.txt");
     client.when(getFile).respond(response().withBody("some log line\nsome other log line\n"));
@@ -1158,7 +1159,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(get).respond(response().withBody(GET_BODY));
 
     HttpRequest getRedirect = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/2/step/1/logs").withQueryStringParameter("file", "named");
-    client.when(getRedirect).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/build-special.txt\" }", baseUrl))));
+    client.when(getRedirect).respond(response().withBody(json("{ \"redirect\": \"%s/logs/build-special.txt\" }".formatted(baseUrl))));
 
     HttpRequest getFile = request().withMethod("GET").withPath("/logs/build-special.txt");
     client.when(getFile).respond(response().withStatusCode(NOT_FOUND_404.code()));
@@ -1168,7 +1169,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     final File outputDir = Files.createTempDirectory("log-output").toFile();
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> step.getLog("named", outputDir), "Exception thrown.");
-    assertEquals(String.format("Cannot download 'named' log for pipeline 1, execution 1, step 'build' to %s/pipeline-1-execution-1-build-named.txt (Cause: java.io.FileNotFoundException).", outputDir, baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot download 'named' log for pipeline 1, execution 1, step 'build' to %s/pipeline-1-execution-1-build-named.txt (Cause: java.io.FileNotFoundException).".formatted(outputDir, baseUrl), exception.getMessage(), "Message was correct");
 
     client.verify(get);
     client.verify(getRedirect);
@@ -1187,7 +1188,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     client.when(get).respond(response().withBody(GET_BODY));
 
     HttpRequest getRedirect = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/2/step/1/logs").withQueryStringParameter("file", "named");
-    client.when(getRedirect).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/build.txt\" }", baseUrl))));
+    client.when(getRedirect).respond(response().withBody(json("{ \"redirect\": \"%s/logs/build.txt\" }".formatted(baseUrl))));
 
     HttpRequest getFile = request().withMethod("GET").withPath("/logs/build.txt");
     client.when(getFile).respond(response().withBody("some log line\nsome other log line\n"));
@@ -1273,7 +1274,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     // Execution detail not found
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, event::getExecution, "Exception thrown.");
-    assertEquals(String.format("Cannot get execution: %s/api/program/1/pipeline/1/execution/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get execution: %s/api/program/1/pipeline/1/execution/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -1303,7 +1304,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     getStep = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/1/step/1");
     client.when(getStep).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, event::getStepState, "Exception thrown.");
-    assertEquals(String.format("Cannot get execution step state: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get execution step state: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
 
     client.verify(getStep, VerificationTimes.once());
     client.verify(get, VerificationTimes.never());
@@ -1336,7 +1337,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     getStep = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/1/step/1");
     client.when(getStep).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, event::getStepState, "Exception thrown.");
-    assertEquals(String.format("Cannot get execution step state: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get execution step state: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
 
     client.verify(getStep, VerificationTimes.once());
     client.verify(get, VerificationTimes.never());
@@ -1369,7 +1370,7 @@ public class PipelineExecutionTest extends AbstractApiTest {
     getStep = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/execution/1/phase/1/step/1");
     client.when(getStep).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, event::getStepState, "Exception thrown.");
-    assertEquals(String.format("Cannot get execution step state: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get execution step state: %s/api/program/1/pipeline/1/execution/1/phase/1/step/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
 
     client.verify(getStep, VerificationTimes.once());
     client.verify(get, VerificationTimes.never());

@@ -41,7 +41,8 @@ import org.mockserver.junit.jupiter.MockServerExtension;
 import org.mockserver.model.JsonBody;
 
 import static com.adobe.aio.util.Constants.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ExtendWith({ MockitoExtension.class, MockServerExtension.class })
 public abstract class AbstractApiTest {
@@ -68,7 +69,7 @@ public abstract class AbstractApiTest {
   @BeforeEach
   void before(MockServerClient client) {
     this.client = client;
-    this.baseUrl = String.format("http://localhost:%s", client.getPort());
+    this.baseUrl = "http://localhost:%s".formatted(client.getPort());
     when(workspace.getAuthContext()).thenReturn(authContext);
     doNothing().when(authContext).validate();
   }

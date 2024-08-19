@@ -22,7 +22,7 @@ package com.adobe.aio.cloudmanager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.adobe.aio.workspace.Workspace;
 import com.adobe.aio.cloudmanager.impl.content.ContentSetApiImpl;
@@ -107,7 +107,7 @@ public class ApiBuilder<A> {
       } else if (clazz == TenantApi.class) {
         impl = TenantApiImpl.class;
       } else {
-        throw new CloudManagerApiException(String.format("Unknown API requested (%s).", clazz));
+        throw new CloudManagerApiException("Unknown API requested (%s).".formatted(clazz));
       }
       return (A) impl.getDeclaredConstructor(Workspace.class, URL.class).newInstance(workspace, url);
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {

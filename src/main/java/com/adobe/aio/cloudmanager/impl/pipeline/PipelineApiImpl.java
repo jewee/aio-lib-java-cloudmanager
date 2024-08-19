@@ -97,7 +97,7 @@ public class PipelineApiImpl implements PipelineApi {
     PipelinePhase buildPhase = original.getPhases().stream()
         .filter(p -> PipelinePhase.TypeEnum.BUILD == p.getType())
         .findFirst()
-        .orElseThrow(() -> new CloudManagerApiException(String.format("Pipeline %s does not appear to have a build phase.", pipelineId)));
+        .orElseThrow(() -> new CloudManagerApiException("Pipeline %s does not appear to have a build phase.".formatted(pipelineId)));
 
     if (updates.getBranch() != null) {
       buildPhase.setBranch(updates.getBranch());
@@ -166,7 +166,7 @@ public class PipelineApiImpl implements PipelineApi {
   private Collection<Pipeline> listDetails(String programId, Predicate<Pipeline> predicate) throws CloudManagerApiException {
     PipelineList list = api.list(programId);
     if (list.getEmbedded() == null || list.getEmbedded().getPipelines() == null) {
-      throw new CloudManagerApiException(String.format("Cannot find pipelines for program %s.", programId));
+      throw new CloudManagerApiException("Cannot find pipelines for program %s.".formatted(programId));
     }
 
     return list.getEmbedded().getPipelines().stream().map(p -> new PipelineImpl(p, this, executionApi)).filter(predicate).collect(Collectors.toList());

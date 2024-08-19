@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -231,7 +231,7 @@ public class PipelineExecutionApiImpl implements PipelineExecutionApi {
     if (redirect != null && StringUtils.isNotBlank(redirect.getRedirect())) {
       return redirect.getRedirect();
     }
-    throw new CloudManagerApiException(String.format(ARTIFACT_REDIRECT_ERROR, step.getExecution().getId(), step.getPhaseId(), step.getStepId()));
+    throw new CloudManagerApiException(ARTIFACT_REDIRECT_ERROR.formatted(step.getExecution().getId(), step.getPhaseId(), step.getStepId()));
   }
 
   @Override
@@ -251,10 +251,10 @@ public class PipelineExecutionApiImpl implements PipelineExecutionApi {
       } else if (Objects.equals(objType, PIPELINE_STEP_STATE_TYPE) && Objects.equals(eventType, ENDED_EVENT_TYPE)) {
         event = new PipelineExecutionStepEndEventImpl(mapper.readValue(eventBody, PipelineExecutionStepEndEvent.class).getEvent(), this);
       } else {
-        throw new CloudManagerApiException(String.format("Unknown event/object types (Event: '%s', Object: '%s').", eventType, objType));
+        throw new CloudManagerApiException("Unknown event/object types (Event: '%s', Object: '%s').".formatted(eventType, objType));
       }
     } catch (JsonProcessingException e) {
-      throw new CloudManagerApiException(String.format("Unable to process event: %s", e.getLocalizedMessage()));
+      throw new CloudManagerApiException("Unable to process event: %s".formatted(e.getLocalizedMessage()));
     }
 
     return event;
@@ -276,7 +276,7 @@ public class PipelineExecutionApiImpl implements PipelineExecutionApi {
   }
 
   void internalCancel(PipelineExecutionImpl execution) throws CloudManagerApiException {
-    final String err = String.format("Cannot find a cancelable step for pipeline %s, execution %s.", execution.getPipelineId(), execution.getId());
+    final String err = "Cannot find a cancelable step for pipeline %s, execution %s.".formatted(execution.getPipelineId(), execution.getId());
     PipelineExecutionStepStateImpl step;
     try {
       step = getStep(execution, PipelineExecutionStepStateImpl.IS_RUNNING, err);
@@ -291,7 +291,7 @@ public class PipelineExecutionApiImpl implements PipelineExecutionApi {
     String path = pe.getAtId();
     Matcher matcher = Pattern.compile("^.*(/api.*)$").matcher(path);
     if (!matcher.matches()) {
-      throw new CloudManagerApiException(String.format("Unable to parse Event Object ID: %s.", path));
+      throw new CloudManagerApiException("Unable to parse Event Object ID: %s.".formatted(path));
     }
     return new PipelineExecutionImpl(api.get(matcher.group(1)), this);
   }
@@ -301,7 +301,7 @@ public class PipelineExecutionApiImpl implements PipelineExecutionApi {
     String path = pes.getAtId();
     Matcher matcher = Pattern.compile("^.*(/api.*)$").matcher(path);
     if (!matcher.matches()) {
-      throw new CloudManagerApiException(String.format("Unable to parse Event Object ID: %s.", path));
+      throw new CloudManagerApiException("Unable to parse Event Object ID: %s.".formatted(path));
     }
 
     com.adobe.aio.cloudmanager.impl.generated.PipelineExecutionStepState delegate = api.getStepState(matcher.group(1));
@@ -321,17 +321,17 @@ public class PipelineExecutionApiImpl implements PipelineExecutionApi {
     if (redirect != null && StringUtils.isNotBlank(redirect.getRedirect())) {
       return redirect.getRedirect();
     }
-    throw new CloudManagerApiException(String.format(EXECUTION_LOG_REDIRECT_ERROR, execution.getId(), action.name()));
+    throw new CloudManagerApiException(EXECUTION_LOG_REDIRECT_ERROR.formatted(execution.getId(), action.name()));
   }
 
   private PipelineExecutionStepStateImpl getStepStateDetail(PipelineExecutionImpl execution, StepAction action) throws CloudManagerApiException {
     return getStep(execution,
         s -> s.getStepAction() == action,
-        String.format("Cannot find step state for action '%s' on execution %s.", action, execution.getId()));
+        "Cannot find step state for action '%s' on execution %s.".formatted(action, execution.getId()));
   }
 
   private PipelineExecutionStepStateImpl getWaitingStep(PipelineExecutionImpl execution) throws CloudManagerApiException {
-    return getStep(execution, PipelineExecutionStepStateImpl.IS_WAITING, String.format("Cannot find a waiting step for pipeline %s, execution %s.", execution.getPipelineId(), execution.getId()));
+    return getStep(execution, PipelineExecutionStepStateImpl.IS_WAITING, "Cannot find a waiting step for pipeline %s, execution %s.".formatted(execution.getPipelineId(), execution.getId()));
   }
 
   private PipelineExecutionStepStateImpl getStep(

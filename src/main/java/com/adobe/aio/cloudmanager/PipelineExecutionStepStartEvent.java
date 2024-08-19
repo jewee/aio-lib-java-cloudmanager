@@ -20,7 +20,7 @@ package com.adobe.aio.cloudmanager;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Event representing that a Pipeline Execution Step has started.

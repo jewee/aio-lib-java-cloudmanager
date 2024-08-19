@@ -45,7 +45,8 @@ import org.mockserver.model.JsonBody;
 import static com.adobe.aio.util.Constants.*;
 import static com.adobe.aio.cloudmanager.ContentSet.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.*;
 import static org.mockserver.model.HttpResponse.*;
 import static org.mockserver.model.HttpStatusCode.*;
@@ -79,7 +80,7 @@ public class ContentSetTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/contentSets");
     client.when(get).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1"), "Exception thrown");
-    assertEquals(String.format("Cannot list content sets: %s/api/program/1/contentSets (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list content sets: %s/api/program/1/contentSets (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -144,7 +145,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withQueryStringParameter("limit", "10");
     client.when(get).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1", 10), "Exception thrown");
-    assertEquals(String.format("Cannot list content sets: %s/api/program/1/contentSets?start=0&limit=10 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list content sets: %s/api/program/1/contentSets?start=0&limit=10 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -177,7 +178,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withQueryStringParameter("limit", "10");
     client.when(get).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1", 10, 10), "Exception thrown");
-    assertEquals(String.format("Cannot list content sets: %s/api/program/1/contentSets?start=10&limit=10 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list content sets: %s/api/program/1/contentSets?start=10&limit=10 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -240,7 +241,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withBody(json("{ \"name\": \"Test\", \"description\":  \"Description\", \"paths\": [ { \"path\": \"/content/foo\", \"excluded\": [\"/content/foo/bar\", \"/content/foo/foo\"] } ] }"));
     client.when(post).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.create("1", "Test", "Description", pds), "Exception thrown.");
-    assertEquals(String.format("Cannot create content set: %s/api/program/1/contentSets (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot create content set: %s/api/program/1/contentSets (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(post);
     client.clear(post);
   }
@@ -275,7 +276,7 @@ public class ContentSetTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/contentSet/1");
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.get("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot get content set: %s/api/program/1/contentSet/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get content set: %s/api/program/1/contentSet/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -312,7 +313,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withBody(json("{ \"name\": \"Test\", \"description\":  \"Description\", \"paths\": [ { \"path\": \"/content/foo\", \"excluded\": [\"/content/foo/bar\", \"/content/foo/foo\"] } ] }"));
     client.when(put).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.update("1", "1", "Test", "Description", pds), "Exception thrown.");
-    assertEquals(String.format("Cannot update content set: %s/api/program/1/contentSet/1 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot update content set: %s/api/program/1/contentSet/1 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get, put);
     client.clear(get);
     client.clear(put);
@@ -429,7 +430,7 @@ public class ContentSetTest extends AbstractApiTest {
     HttpRequest del = request().withMethod("DELETE").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/contentSet/1");
     client.when(del).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.delete("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot delete content set: %s/api/program/1/contentSet/1 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot delete content set: %s/api/program/1/contentSet/1 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(del);
     client.clear(del);
   }
@@ -454,7 +455,7 @@ public class ContentSetTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/contentFlows");
     client.when(get).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.listFlows("1"), "Exception thrown");
-    assertEquals(String.format("Cannot list content flows: %s/api/program/1/contentFlows (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list content flows: %s/api/program/1/contentFlows (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -528,7 +529,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withQueryStringParameter("limit", "10");
     client.when(get).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.listFlows("1", 10), "Exception thrown");
-    assertEquals(String.format("Cannot list content flows: %s/api/program/1/contentFlows?start=0&limit=10 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list content flows: %s/api/program/1/contentFlows?start=0&limit=10 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -562,7 +563,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withQueryStringParameter("limit", "10");
     client.when(get).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.listFlows("1", 10, 10), "Exception thrown");
-    assertEquals(String.format("Cannot list content flows: %s/api/program/1/contentFlows?start=10&limit=10 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list content flows: %s/api/program/1/contentFlows?start=10&limit=10 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -622,7 +623,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withBody(json("{ \"contentSetId\": \"1\", \"destEnvironmentId\": \"2\", \"tier\": \"author\", \"includeACL\": true, \"destProgramId\": \"1\" }"));
     client.when(post).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.startFlow("1", "1", "1", "2", true), "Exception thrown.");
-    assertEquals(String.format("Cannot start content flow: %s/api/program/1/environment/1/contentFlow (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot start content flow: %s/api/program/1/environment/1/contentFlow (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(post);
     client.clear(post);
   }
@@ -638,7 +639,7 @@ public class ContentSetTest extends AbstractApiTest {
         .withBody(json("{ \"contentSetId\": \"1\", \"destEnvironmentId\": \"2\", \"tier\": \"author\", \"includeACL\": true, \"destProgramId\": \"1\" }"));
     client.when(post).respond(response().withStatusCode(FORBIDDEN_403.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.startFlow("1", "1", "1", "2", true), "Exception thrown.");
-    assertEquals(String.format("Cannot start content flow: %s/api/program/1/environment/1/contentFlow (403 Forbidden).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot start content flow: %s/api/program/1/environment/1/contentFlow (403 Forbidden).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(post);
     client.clear(post);
   }
@@ -668,7 +669,7 @@ public class ContentSetTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/contentFlow/1");
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.getFlow("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot get content flow: %s/api/program/1/contentFlow/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get content flow: %s/api/program/1/contentFlow/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -692,7 +693,7 @@ public class ContentSetTest extends AbstractApiTest {
     HttpRequest del = request().withMethod("DELETE").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/contentFlow/1");
     client.when(del).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.cancelFlow("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot cancel content flow: %s/api/program/1/contentFlow/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot cancel content flow: %s/api/program/1/contentFlow/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(del);
     client.clear(del);
   }

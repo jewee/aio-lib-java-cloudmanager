@@ -96,26 +96,26 @@ public class PipelineExecutionStepStateImpl extends PipelineExecutionStepState i
   @Override
   public void getLog(File dir) throws CloudManagerApiException {
     String downloadUrl = client.getStepLogDownloadUrl(execution, getStepAction());
-    String filename = String.format("pipeline-%s-execution-%s-%s.txt", execution.getPipelineId(), execution.getId(), getStepAction());
+    String filename = "pipeline-%s-execution-%s-%s.txt".formatted(execution.getPipelineId(), execution.getId(), getStepAction());
 
     try {
       File downloaded = new File(dir, filename);
       FileUtils.copyInputStreamToFile(new URL(downloadUrl).openStream(), downloaded);
     } catch (IOException e) {
-      throw new CloudManagerApiException(String.format("Cannot download log for pipeline %s, execution %s, step '%s' to %s/%s (Cause: %s).", execution.getPipelineId(), execution.getId(), getStepAction(), dir, filename, e.getClass().getName()));
+      throw new CloudManagerApiException("Cannot download log for pipeline %s, execution %s, step '%s' to %s/%s (Cause: %s).".formatted(execution.getPipelineId(), execution.getId(), getStepAction(), dir, filename, e.getClass().getName()));
     }
   }
 
   @Override
   public void getLog(String name, File dir) throws CloudManagerApiException {
     String downloadUrl = client.getStepLogDownloadUrl(execution, getStepAction(), name);
-    String filename = String.format("pipeline-%s-execution-%s-%s-%s.txt", execution.getPipelineId(), execution.getId(), getStepAction(), name);
+    String filename = "pipeline-%s-execution-%s-%s-%s.txt".formatted(execution.getPipelineId(), execution.getId(), getStepAction(), name);
 
     try {
       File downloaded = new File(dir, filename);
       FileUtils.copyInputStreamToFile(new URL(downloadUrl).openStream(), downloaded);
     } catch (IOException e) {
-      throw new CloudManagerApiException(String.format("Cannot download '%s' log for pipeline %s, execution %s, step '%s' to %s/%s (Cause: %s).", name, execution.getPipelineId(), execution.getId(), getStepAction(), dir, filename, e.getClass().getName()));
+      throw new CloudManagerApiException("Cannot download '%s' log for pipeline %s, execution %s, step '%s' to %s/%s (Cause: %s).".formatted(name, execution.getPipelineId(), execution.getId(), getStepAction(), dir, filename, e.getClass().getName()));
     }
   }
 
@@ -137,7 +137,7 @@ public class PipelineExecutionStepStateImpl extends PipelineExecutionStepState i
       gen.close();
       return writer.toString();
     } catch (IOException e) {
-      throw new CloudManagerApiException(String.format(CloudManagerExceptionDecoder.GENERATE_BODY, e.getLocalizedMessage()));
+      throw new CloudManagerApiException(CloudManagerExceptionDecoder.GENERATE_BODY.formatted(e.getLocalizedMessage()));
     }
   }
 
@@ -163,7 +163,7 @@ public class PipelineExecutionStepStateImpl extends PipelineExecutionStepState i
       gen.close();
       return writer.toString();
     } catch (IOException e) {
-      throw new CloudManagerApiException(String.format(CloudManagerExceptionDecoder.GENERATE_BODY, e.getLocalizedMessage()));
+      throw new CloudManagerApiException(CloudManagerExceptionDecoder.GENERATE_BODY.formatted(e.getLocalizedMessage()));
     }
   }
 

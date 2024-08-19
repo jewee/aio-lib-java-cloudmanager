@@ -21,7 +21,7 @@ package com.adobe.aio.cloudmanager;
  */
 
 import java.time.OffsetDateTime;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Root interface that represents all Pipeline Execution events that may be published.

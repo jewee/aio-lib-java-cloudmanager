@@ -121,7 +121,7 @@ public class EnvironmentImpl extends Environment implements com.adobe.aio.cloudm
   public String getDeveloperConsoleUrl() throws CloudManagerApiException {
     HalLink link = delegate.getLinks().getHttpnsAdobeComadobecloudreldeveloperConsole();
     if (link == null) {
-      throw new CloudManagerApiException(String.format("Environment %s [%s] does not appear to support Developer Console.", getId(), getName()));
+      throw new CloudManagerApiException("Environment %s [%s] does not appear to support Developer Console.".formatted(getId(), getName()));
     } else {
       return link.getHref();
     }

@@ -56,7 +56,8 @@ import org.mockserver.verify.VerificationTimes;
 
 import static com.adobe.aio.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.*;
 import static org.mockserver.model.HttpResponse.*;
 import static org.mockserver.model.HttpStatusCode.*;
@@ -95,7 +96,7 @@ public class EnvironmentTest extends AbstractApiTest {
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1"), "Exception thrown.");
-    assertEquals(String.format("Cannot list environments: %s/api/program/1/environments (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list environments: %s/api/program/1/environments (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
@@ -146,7 +147,7 @@ public class EnvironmentTest extends AbstractApiTest {
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1", com.adobe.aio.cloudmanager.Environment.Type.DEV), "Exception thrown.");
-    assertEquals(String.format("Cannot list environments: %s/api/program/1/environments?type=dev (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list environments: %s/api/program/1/environments?type=dev (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
@@ -202,7 +203,7 @@ public class EnvironmentTest extends AbstractApiTest {
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class,
         () -> underTest.create("1", "Test", com.adobe.aio.cloudmanager.Environment.Type.DEV, "va7", null),
         "Exception thrown.");
-    assertEquals(String.format("Cannot create environment: %s/api/program/1/environments (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot create environment: %s/api/program/1/environments (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(post);
     client.clear(post);
   }
@@ -230,7 +231,7 @@ public class EnvironmentTest extends AbstractApiTest {
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.get("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot get environment: %s/api/program/1/environment/1 (404 Not Found)", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get environment: %s/api/program/1/environment/1 (404 Not Found)".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -313,7 +314,7 @@ public class EnvironmentTest extends AbstractApiTest {
         .withQueryStringParameter("days", "1");
     client.when(list).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.listLogs("1", "1", option, 1), "Exception thrown.");
-    assertEquals(String.format("Cannot get logs: %s/api/program/1/environment/1/logs?service=author&name=aemerror&days=1 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get logs: %s/api/program/1/environment/1/logs?service=author&name=aemerror&days=1 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
@@ -352,7 +353,7 @@ public class EnvironmentTest extends AbstractApiTest {
         .withQueryStringParameter("date", date.toString());
     client.when(get).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.getLogDownloadUrl("1", "1", option, date), "Exception thrown.");
-    assertEquals(String.format("Cannot get logs: %s/api/program/1/environment/1/logs/download?service=author&name=aemerror&date=%s (400 Bad Request).", baseUrl, date), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get logs: %s/api/program/1/environment/1/logs/download?service=author&name=aemerror&date=%s (400 Bad Request).".formatted(baseUrl, date), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -371,7 +372,7 @@ public class EnvironmentTest extends AbstractApiTest {
         .withQueryStringParameter("date", date.toString());
     client.when(get).respond(response().withStatusCode(OK_200.code()).withBody(json("{}")));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.getLogDownloadUrl("1", "1", option, date), "Exception thrown.");
-    assertEquals(String.format("Log redirect for environment 1, service 'author', log name 'aemerror', date '%s' did not exist.", date), exception.getMessage(), "Message was correct.");
+    assertEquals("Log redirect for environment 1, service 'author', log name 'aemerror', date '%s' did not exist.".formatted(date), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -391,9 +392,9 @@ public class EnvironmentTest extends AbstractApiTest {
         .withQueryStringParameter("service", "author")
         .withQueryStringParameter("name", "aemerror")
         .withQueryStringParameter("date", date.toString());
-    client.when(get).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }", baseUrl, date))));
+    client.when(get).respond(response().withBody(json("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }".formatted(baseUrl, date))));
     String url = new EnvironmentImpl(mock, underTest).getLogDownloadUrl(option, date);
-    assertEquals(String.format("%s/logs/author-aemerror-%s.txt", baseUrl, date), url, "URL was correct.");
+    assertEquals("%s/logs/author-aemerror-%s.txt".formatted(baseUrl, date), url, "URL was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -405,7 +406,7 @@ public class EnvironmentTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/environment/1/regionDeployments/1");
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.getRegionDeployment("1", "1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot get region deployment: %s/api/program/1/environment/1/regionDeployments/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot get region deployment: %s/api/program/1/environment/1/regionDeployments/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(get);
     client.clear(get);
   }
@@ -430,7 +431,7 @@ public class EnvironmentTest extends AbstractApiTest {
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.listRegionDeployments("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot list region deployments: %s/api/program/1/environment/1/regionDeployments (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot list region deployments: %s/api/program/1/environment/1/regionDeployments (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
@@ -491,7 +492,7 @@ public class EnvironmentTest extends AbstractApiTest {
     client.when(post).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     com.adobe.aio.cloudmanager.Environment env = new EnvironmentImpl(mock, underTest);
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.createRegionDeployments(env, Region.CANADA, Region.SOUTH_UK), "Exception thrown.");
-    assertEquals(String.format("Cannot add region deployments: %s/api/program/1/environment/1/regionDeployments (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot add region deployments: %s/api/program/1/environment/1/regionDeployments (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(post);
     client.clear(post);
   }
@@ -569,7 +570,7 @@ public class EnvironmentTest extends AbstractApiTest {
     client.when(post).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     com.adobe.aio.cloudmanager.Environment env = new EnvironmentImpl(mock, underTest);
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.removeRegionDeployments(env, Region.SOUTH_UK), "Exception thrown.");
-    assertEquals(String.format("Cannot remove region deployments: %s/api/program/1/environment/1/regionDeployments (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot remove region deployments: %s/api/program/1/environment/1/regionDeployments (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list, post);
     client.clear(list);
     client.clear(post);
@@ -632,7 +633,7 @@ public class EnvironmentTest extends AbstractApiTest {
         .withPath("/api/program/1/environment/1/reset");
     client.when(put).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.resetRde("1", "1"), "Exception thrown");
-    assertEquals(String.format("Cannot reset rapid development environment: %s/api/program/1/environment/1/reset (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot reset rapid development environment: %s/api/program/1/environment/1/reset (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(put);
     client.clear(put);
   }
@@ -661,7 +662,7 @@ public class EnvironmentTest extends AbstractApiTest {
     HttpRequest list = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/environment/1/variables");
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.getVariables("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot list environment variables: %s/api/program/1/environment/1/variables (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot list environment variables: %s/api/program/1/environment/1/variables (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(list);
     client.clear(list);
   }
@@ -715,10 +716,12 @@ public class EnvironmentTest extends AbstractApiTest {
         .withHeader(API_KEY_HEADER, sessionId)
         .withHeader("Content-Type", "application/json")
         .withPath("/api/program/1/environment/1/variables")
-        .withBody(json("[ { " +
-            "\"name\": \"foo\", \"value\": \"bar\", \"type\": \"string\", \"service\": \"author\" }, " +
-            "{ \"name\": \"secretFoo\", \"value\": \"secretBar\", \"type\": \"secretString\", \"service\": \"publish\" " +
-            "} ]"));
+        .withBody(json("""
+            [ { \
+            "name": "foo", "value": "bar", "type": "string", "service": "author" }, \
+            { "name": "secretFoo", "value": "secretBar", "type": "secretString", "service": "publish" \
+            } ]\
+            """));
     client.when(patch).respond(
         response()
             .withStatusCode(BAD_REQUEST_400.code())
@@ -729,7 +732,7 @@ public class EnvironmentTest extends AbstractApiTest {
     Variable var2 = Variable.builder().name("secretFoo").value("secretBar").type(Variable.Type.SECRET).service(com.adobe.aio.cloudmanager.Environment.Tier.PUBLISH).build();
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.setVariables("1", "1", var1, var2), "Exception thrown.");
-    assertEquals(String.format("Cannot set environment variables: %s/api/program/1/environment/1/variables (400 Bad Request) - Validation Error(s): some error.", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot set environment variables: %s/api/program/1/environment/1/variables (400 Bad Request) - Validation Error(s): some error.".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(patch);
     client.clear(patch);
   }
@@ -742,16 +745,18 @@ public class EnvironmentTest extends AbstractApiTest {
         .withHeader(API_KEY_HEADER, sessionId)
         .withHeader("Content-Type", "application/json")
         .withPath("/api/program/1/environment/1/variables")
-        .withBody(json("[ { " +
-            "\"name\": \"foo\", \"value\": \"bar\", \"type\": \"string\", \"service\": \"author\" }, " +
-            "{ \"name\": \"secretFoo\", \"value\": \"secretBar\", \"type\": \"secretString\", \"service\": \"publish\" " +
-            "} ]"));
+        .withBody(json("""
+            [ { \
+            "name": "foo", "value": "bar", "type": "string", "service": "author" }, \
+            { "name": "secretFoo", "value": "secretBar", "type": "secretString", "service": "publish" \
+            } ]\
+            """));
     client.when(patch).respond(response().withStatusCode(NOT_FOUND_404.code()));
     Variable var1 = Variable.builder().name("foo").value("bar").type(Variable.Type.STRING).service(com.adobe.aio.cloudmanager.Environment.Tier.AUTHOR).build();
     Variable var2 = Variable.builder().name("secretFoo").value("secretBar").type(Variable.Type.SECRET).service(com.adobe.aio.cloudmanager.Environment.Tier.PUBLISH).build();
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.setVariables("1", "1", var1, var2), "Exception thrown.");
-    assertEquals(String.format("Cannot set environment variables: %s/api/program/1/environment/1/variables (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot set environment variables: %s/api/program/1/environment/1/variables (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(patch);
     client.clear(patch);
   }
@@ -769,10 +774,12 @@ public class EnvironmentTest extends AbstractApiTest {
         .withHeader(API_KEY_HEADER, sessionId)
         .withHeader("Content-Type", "application/json")
         .withPath("/api/program/1/environment/1/variables")
-        .withBody(json("[ { " +
-            "\"name\": \"foo\", \"value\": \"bar\", \"type\": \"string\", \"service\": \"author\" }, " +
-            "{ \"name\": \"secretFoo\", \"value\": \"secretBar\", \"type\": \"secretString\", \"service\": \"publish\" " +
-            "} ]"));
+        .withBody(json("""
+            [ { \
+            "name": "foo", "value": "bar", "type": "string", "service": "author" }, \
+            { "name": "secretFoo", "value": "secretBar", "type": "secretString", "service": "publish" \
+            } ]\
+            """));
     Variable var1 = Variable.builder().name("foo").value("bar").type(Variable.Type.STRING).service(com.adobe.aio.cloudmanager.Environment.Tier.AUTHOR).build();
     Variable var2 = Variable.builder().name("secretFoo").value("secretBar").type(Variable.Type.SECRET).service(com.adobe.aio.cloudmanager.Environment.Tier.PUBLISH).build();
 
@@ -802,10 +809,12 @@ public class EnvironmentTest extends AbstractApiTest {
         .withHeader(API_KEY_HEADER, sessionId)
         .withHeader("Content-Type", "application/json")
         .withPath("/api/program/1/environment/1/variables")
-        .withBody(json("[ { " +
-            "\"name\": \"foo\", \"value\": \"bar\", \"type\": \"string\", \"service\": \"author\" }, " +
-            "{ \"name\": \"secretFoo\", \"value\": \"secretBar\", \"type\": \"secretString\", \"service\": \"publish\" " +
-            "} ]"));
+        .withBody(json("""
+            [ { \
+            "name": "foo", "value": "bar", "type": "string", "service": "author" }, \
+            { "name": "secretFoo", "value": "secretBar", "type": "secretString", "service": "publish" \
+            } ]\
+            """));
     client.when(patch).respond(response().withBody(LIST_VARIABLES_BODY));
     Variable var1 = Variable.builder().name("foo").value("bar").type(Variable.Type.STRING).service(com.adobe.aio.cloudmanager.Environment.Tier.AUTHOR).build();
     Variable var2 = Variable.builder().name("secretFoo").value("secretBar").type(Variable.Type.SECRET).service(com.adobe.aio.cloudmanager.Environment.Tier.PUBLISH).build();
@@ -838,12 +847,12 @@ public class EnvironmentTest extends AbstractApiTest {
         .withQueryStringParameter("service", "author")
         .withQueryStringParameter("name", "aemerror")
         .withQueryStringParameter("date", date.toString());
-    client.when(getRedirect).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }", baseUrl, date))));
+    client.when(getRedirect).respond(response().withBody(json("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }".formatted(baseUrl, date))));
 
-    HttpRequest getFile = request().withMethod("GET").withPath(String.format("/logs/author-aemerror-%s.txt", date));
+    HttpRequest getFile = request().withMethod("GET").withPath("/logs/author-aemerror-%s.txt".formatted(date));
     client.when(getFile).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.downloadLogs("1", "1", option, 1, new File(".")), "Exception thrown.");
-    assertEquals(String.format("Cannot download %s/api/program/1/environment/1/logs/download?service=author&name=aemerror&date=2019-09-08 to ./environment-1-author-aemerror-2019-09-08.log.gz (Cause: java.io.FileNotFoundException).", baseUrl, baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot download %s/api/program/1/environment/1/logs/download?service=author&name=aemerror&date=2019-09-08 to ./environment-1-author-aemerror-2019-09-08.log.gz (Cause: java.io.FileNotFoundException).".formatted(baseUrl, baseUrl), exception.getMessage(), "Message was correct");
 
     client.verify(listLogs, VerificationTimes.exactly(1));
     client.verify(getRedirect, VerificationTimes.exactly(1));
@@ -911,7 +920,7 @@ public class EnvironmentTest extends AbstractApiTest {
         .withQueryStringParameter("service", "author")
         .withQueryStringParameter("name", "aemerror")
         .withQueryStringParameter("date", firstDate.toString());
-    client.when(getFirstRedirect).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }", baseUrl, firstDate))));
+    client.when(getFirstRedirect).respond(response().withBody(json("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }".formatted(baseUrl, firstDate))));
     HttpRequest getSecondRedirect = request()
         .withMethod("GET")
         .withHeader(API_KEY_HEADER, sessionId)
@@ -919,12 +928,12 @@ public class EnvironmentTest extends AbstractApiTest {
         .withQueryStringParameter("service", "author")
         .withQueryStringParameter("name", "aemerror")
         .withQueryStringParameter("date", secondDate.toString());
-    client.when(getSecondRedirect).respond(response().withBody(json(String.format("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }", baseUrl, secondDate))));
+    client.when(getSecondRedirect).respond(response().withBody(json("{ \"redirect\": \"%s/logs/author-aemerror-%s.txt\" }".formatted(baseUrl, secondDate))));
 
-    HttpRequest download1 = request().withMethod("GET").withPath(String.format("/logs/author-aemerror-%s.txt", firstDate));
+    HttpRequest download1 = request().withMethod("GET").withPath("/logs/author-aemerror-%s.txt".formatted(firstDate));
     client.when(download1).respond(response().withBody(zipBytes));
 
-    HttpRequest download2 = request().withMethod("GET").withPath(String.format("/logs/author-aemerror-%s.txt", secondDate));
+    HttpRequest download2 = request().withMethod("GET").withPath("/logs/author-aemerror-%s.txt".formatted(secondDate));
     client.when(download2).respond(response().withBody(zipBytes));
 
     File outputDir = Files.createTempDirectory("log-output").toFile();

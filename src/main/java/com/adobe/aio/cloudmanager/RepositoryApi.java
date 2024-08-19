@@ -21,7 +21,7 @@ package com.adobe.aio.cloudmanager;
  */
 
 import java.util.Collection;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Repository API

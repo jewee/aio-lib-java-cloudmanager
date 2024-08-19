@@ -109,7 +109,7 @@ public class EnvironmentApiImpl implements EnvironmentApi {
       String body = writer.toString();
       return new EnvironmentImpl(api.create(programId, body), this);
     } catch (IOException e) {
-      throw new CloudManagerApiException(String.format(CloudManagerExceptionDecoder.GENERATE_BODY, e.getLocalizedMessage()));
+      throw new CloudManagerApiException(CloudManagerExceptionDecoder.GENERATE_BODY.formatted(e.getLocalizedMessage()));
     }
   }
 
@@ -157,7 +157,7 @@ public class EnvironmentApiImpl implements EnvironmentApi {
     if (redirect != null && StringUtils.isNotBlank(redirect.getRedirect())) {
       return redirect.getRedirect();
     }
-    throw new CloudManagerApiException(String.format(ENVIRONMENT_LOG_REDIRECT_ERROR, environmentId, option.getService(), option.getName(), date));
+    throw new CloudManagerApiException(ENVIRONMENT_LOG_REDIRECT_ERROR.formatted(environmentId, option.getService(), option.getName(), date));
   }
 
   @Override
@@ -265,8 +265,8 @@ public class EnvironmentApiImpl implements EnvironmentApi {
     List<EnvironmentLog> downloads = logs.getEmbedded().getDownloads();
     List<com.adobe.aio.cloudmanager.EnvironmentLog> downloaded = new ArrayList<>();
     for (EnvironmentLog log : downloads) {
-      String logfileName = String.format("environment-%s-%s-%s-%s.log.gz", environmentId, log.getService(), log.getName(), log.getDate());
-      EnvironmentLogImpl impl = new EnvironmentLogImpl(log, String.format("%s/%s", dir.getPath(), logfileName));
+      String logfileName = "environment-%s-%s-%s-%s.log.gz".formatted(environmentId, log.getService(), log.getName(), log.getDate());
+      EnvironmentLogImpl impl = new EnvironmentLogImpl(log, "%s/%s".formatted(dir.getPath(), logfileName));
       downloadLog(impl);
       downloaded.add(impl);
     }
@@ -284,7 +284,7 @@ public class EnvironmentApiImpl implements EnvironmentApi {
       File downloaded = new File(log.getDownloadPath());
       FileUtils.copyInputStreamToFile(new URL(redirect.getRedirect()).openStream(), downloaded);
     } catch (IOException e) {
-      throw new CloudManagerApiException(String.format("Cannot download %s%s to %s (Cause: %s).", baseUrl, log.getUrl(), log.getDownloadPath(), e.getClass().getName()));
+      throw new CloudManagerApiException("Cannot download %s%s to %s (Cause: %s).".formatted(baseUrl, log.getUrl(), log.getDownloadPath(), e.getClass().getName()));
     }
   }
 

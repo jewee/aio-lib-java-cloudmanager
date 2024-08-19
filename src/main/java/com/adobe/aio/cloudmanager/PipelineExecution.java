@@ -22,7 +22,7 @@ package com.adobe.aio.cloudmanager;
 
 import java.util.Optional;
 import java.util.function.Predicate;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A Pipeline Execution representation - an instance of a Pipeline run.

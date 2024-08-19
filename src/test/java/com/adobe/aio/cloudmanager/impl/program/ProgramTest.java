@@ -43,7 +43,8 @@ import org.mockserver.model.JsonBody;
 
 import static com.adobe.aio.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.*;
 import static org.mockserver.model.HttpResponse.*;
 import static org.mockserver.model.HttpStatusCode.*;
@@ -75,7 +76,7 @@ class ProgramTest extends AbstractApiTest {
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.get("1"), "Exception was thrown");
-    assertEquals(String.format("Cannot retrieve program: %s/api/program/1 (404 Not Found).", baseUrl), exception.getMessage(), "Correct exception message");
+    assertEquals("Cannot retrieve program: %s/api/program/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Correct exception message");
     client.verify(get);
     client.clear(get);
   }
@@ -98,7 +99,7 @@ class ProgramTest extends AbstractApiTest {
     HttpRequest del = request().withMethod("DELETE").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1");
     client.when(del).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.delete("1"), "Exception was thrown");
-    assertEquals(String.format("Cannot delete program: %s/api/program/1 (400 Bad Request).", baseUrl), exception.getMessage(), "Correct exception message");
+    assertEquals("Cannot delete program: %s/api/program/1 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Correct exception message");
     client.verify(del);
     client.clear(del);
   }
@@ -134,7 +135,7 @@ class ProgramTest extends AbstractApiTest {
     HttpRequest list = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/tenant/1/programs");
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1"), "Exception thrown for 404");
-    assertEquals(String.format("Cannot retrieve programs: %s/api/tenant/1/programs (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot retrieve programs: %s/api/tenant/1/programs (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(list);
     client.clear(list);
   }
@@ -182,7 +183,7 @@ class ProgramTest extends AbstractApiTest {
     HttpRequest list = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/regions");
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.listRegions("1"), "Exception thrown for 404");
-    assertEquals(String.format("Cannot retrieve program regions: %s/api/program/1/regions (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot retrieve program regions: %s/api/program/1/regions (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(list);
     client.clear(list);
   }

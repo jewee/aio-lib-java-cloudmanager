@@ -68,7 +68,7 @@ public class PipelineExecutionImpl extends PipelineExecution implements com.adob
   public com.adobe.aio.cloudmanager.PipelineExecutionStepState getStep(StepAction action) throws CloudManagerApiException {
     Optional<com.adobe.aio.cloudmanager.PipelineExecutionStepState> step = getStep((s) -> s.getStepAction() == action);
     if (step.isEmpty()) {
-      throw new CloudManagerApiException(String.format(FIND_STEP_ERROR, action, getPipelineId(), getId()));
+      throw new CloudManagerApiException(FIND_STEP_ERROR.formatted(action, getPipelineId(), getId()));
     }
     return step.get();
   }
@@ -77,13 +77,13 @@ public class PipelineExecutionImpl extends PipelineExecution implements com.adob
   public com.adobe.aio.cloudmanager.PipelineExecutionStepState getCurrentStep() throws CloudManagerApiException {
     PipelineExecutionEmbedded embeddeds = getEmbedded();
     if (embeddeds == null || embeddeds.getStepStates().isEmpty()) {
-      throw new CloudManagerApiException(String.format(FIND_CURRENT_ERROR, getPipelineId(), getId()));
+      throw new CloudManagerApiException(FIND_CURRENT_ERROR.formatted(getPipelineId(), getId()));
     }
     PipelineExecutionStepState step = embeddeds.getStepStates()
         .stream()
         .filter(stepState -> stepState.getStatus() != PipelineExecutionStepState.StatusEnum.FINISHED)
         .findFirst()
-        .orElseThrow(() -> new CloudManagerApiException(String.format(FIND_CURRENT_ERROR, getPipelineId(), getId())));
+        .orElseThrow(() -> new CloudManagerApiException(FIND_CURRENT_ERROR.formatted(getPipelineId(), getId())));
     return new PipelineExecutionStepStateImpl(step, this, client);
   }
 

@@ -51,7 +51,8 @@ import org.mockserver.verify.VerificationTimes;
 
 import static com.adobe.aio.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.*;
 import static org.mockserver.model.HttpResponse.*;
 import static org.mockserver.model.HttpStatusCode.*;
@@ -104,7 +105,7 @@ class PipelineTest extends AbstractApiTest {
     HttpRequest list = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipelines");
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1"), "Exception thrown.");
-    assertEquals(String.format("Cannot retrieve pipelines: %s/api/program/1/pipelines (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot retrieve pipelines: %s/api/program/1/pipelines (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
 
     client.verify(list);
     client.clear(list);
@@ -161,7 +162,7 @@ class PipelineTest extends AbstractApiTest {
     HttpRequest get = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1");
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.get("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot retrieve pipeline: %s/api/program/1/pipeline/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot retrieve pipeline: %s/api/program/1/pipeline/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
 
     client.verify(get);
     client.clear(get);
@@ -189,7 +190,7 @@ class PipelineTest extends AbstractApiTest {
     HttpRequest delete = request().withMethod("DELETE").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1");
     client.when(delete).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.delete("1", "1"), "Exception thrown");
-    assertEquals(String.format("Cannot delete pipeline: %s/api/program/1/pipeline/1 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot delete pipeline: %s/api/program/1/pipeline/1 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct");
 
     client.verify(delete);
     client.clear(delete);
@@ -229,7 +230,7 @@ class PipelineTest extends AbstractApiTest {
     client.when(get).respond(response().withBody(loadBodyJson("pipeline/get-no-build.json")));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.update("1", "1", PipelineUpdate.builder().build()), "Exception thrown");
-    assertEquals(String.format("Pipeline %s does not appear to have a build phase.", "1"), exception.getMessage(), "Message was correct");
+    assertEquals("Pipeline %s does not appear to have a build phase.".formatted("1"), exception.getMessage(), "Message was correct");
     client.verify(get, VerificationTimes.once());
     client.clear(get);
   }
@@ -244,7 +245,7 @@ class PipelineTest extends AbstractApiTest {
     HttpRequest patch = request().withPath("PATCH").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1").withContentType(MediaType.APPLICATION_JSON);
     client.when(patch).respond(response().withStatusCode(BAD_REQUEST_400.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.update("1", "1", PipelineUpdate.builder().build()), "Exception thrown");
-    assertEquals(String.format("Cannot update pipeline: %s/api/program/1/pipeline/1 (400 Bad Request).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot update pipeline: %s/api/program/1/pipeline/1 (400 Bad Request).".formatted(baseUrl), exception.getMessage(), "Message was correct");
 
     client.verify(get, VerificationTimes.once());
     client.verify(patch);
@@ -323,7 +324,7 @@ class PipelineTest extends AbstractApiTest {
     HttpRequest delete = request().withMethod("DELETE").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/cache");
     client.when(delete).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.invalidateCache("1", "1"), "Exception thrown");
-    assertEquals(String.format("Cannot invalidate pipeline cache: %s/api/program/1/pipeline/1/cache (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot invalidate pipeline cache: %s/api/program/1/pipeline/1/cache (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
 
     client.verify(delete);
     client.clear(delete);
@@ -362,7 +363,7 @@ class PipelineTest extends AbstractApiTest {
     HttpRequest list = request().withMethod("GET").withHeader(API_KEY_HEADER, sessionId).withPath("/api/program/1/pipeline/1/variables");
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.getVariables("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot list pipeline variables: %s/api/program/1/pipeline/1/variables (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot list pipeline variables: %s/api/program/1/pipeline/1/variables (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(list);
     client.clear(list);
   }
@@ -425,7 +426,7 @@ class PipelineTest extends AbstractApiTest {
     Variable var2 = Variable.builder().name("secretFoo").value("secretBar").type(Variable.Type.SECRET).build();
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.setVariables("1", "1", var1, var2), "Exception thrown.");
-    assertEquals(String.format("Cannot set pipeline variables: %s/api/program/1/pipeline/1/variables (400 Bad Request) - Validation Error(s): some error.", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot set pipeline variables: %s/api/program/1/pipeline/1/variables (400 Bad Request) - Validation Error(s): some error.".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(patch);
     client.clear(patch);
   }
@@ -444,7 +445,7 @@ class PipelineTest extends AbstractApiTest {
     Variable var2 = Variable.builder().name("secretFoo").value("secretBar").type(Variable.Type.SECRET).build();
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.setVariables("1", "1", var1, var2), "Exception thrown.");
-    assertEquals(String.format("Cannot set pipeline variables: %s/api/program/1/pipeline/1/variables (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot set pipeline variables: %s/api/program/1/pipeline/1/variables (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(patch);
     client.clear(patch);
   }

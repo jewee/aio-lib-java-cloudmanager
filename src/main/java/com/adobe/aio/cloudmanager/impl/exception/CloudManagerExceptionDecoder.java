@@ -91,7 +91,7 @@ public abstract class CloudManagerExceptionDecoder implements ErrorDecoder {
   protected String getError(Response response) {
     int status = response.status();
     StringBuilder errorBuilder = new StringBuilder();
-    errorBuilder.append(String.format("%s (%d %s)", response.request().url(), status, getReason(status)));
+    errorBuilder.append("%s (%d %s)".formatted(response.request().url(), status, getReason(status)));
     
     Response.Body body = response.body();
     if (body != null) {

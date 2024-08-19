@@ -46,7 +46,7 @@ public class ExceptionDecoder extends CloudManagerExceptionDecoder {
       }
     }
 
-    return new CloudManagerApiException(String.format(type.message, getError(response)));
+    return new CloudManagerApiException(type.message.formatted(getError(response)));
   }
 
   @Getter

@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.adobe.aio.cloudmanager.exception.DeleteInProgressException;
 

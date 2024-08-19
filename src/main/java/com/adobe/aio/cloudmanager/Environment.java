@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -212,7 +212,7 @@ public interface Environment {
 
     @Override
     public String toString() {
-      return String.format("Name='%s'", name);
+      return "Name='%s'".formatted(name);
     }
   }
 }

@@ -43,7 +43,8 @@ import org.mockserver.verify.VerificationTimes;
 
 import static com.adobe.aio.util.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.*;
 import static org.mockserver.model.HttpResponse.*;
 import static org.mockserver.model.HttpStatusCode.*;
@@ -75,7 +76,7 @@ public class RepositoryTest extends AbstractApiTest {
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1"), "Exception thrown.");
-    assertEquals(String.format("Cannot retrieve repositories: %s/api/program/1/repositories (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot retrieve repositories: %s/api/program/1/repositories (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(list);
     client.clear(list);
   }
@@ -130,7 +131,7 @@ public class RepositoryTest extends AbstractApiTest {
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.list("1", 10), "Exception thrown.");
-    assertEquals(String.format("Cannot retrieve repositories: %s/api/program/1/repositories?start=0&limit=10 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot retrieve repositories: %s/api/program/1/repositories?start=0&limit=10 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(list);
     client.clear(list);
   }
@@ -216,7 +217,7 @@ public class RepositoryTest extends AbstractApiTest {
     client.when(get).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.get("1", "1"), "Exception thrown.");
-    assertEquals(String.format("Cannot retrieve repository: %s/api/program/1/repository/1 (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct");
+    assertEquals("Cannot retrieve repository: %s/api/program/1/repository/1 (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct");
     client.verify(get, VerificationTimes.exactly(1));
     client.clear(get);
   }
@@ -249,7 +250,7 @@ public class RepositoryTest extends AbstractApiTest {
     client.when(list).respond(response().withStatusCode(NOT_FOUND_404.code()));
 
     CloudManagerApiException exception = assertThrows(CloudManagerApiException.class, () -> underTest.listBranches(mock), "Exception thrown.");
-    assertEquals(String.format("Cannot retrieve repository branches: %s/api/program/1/repository/1/branches (404 Not Found).", baseUrl), exception.getMessage(), "Message was correct.");
+    assertEquals("Cannot retrieve repository branches: %s/api/program/1/repository/1/branches (404 Not Found).".formatted(baseUrl), exception.getMessage(), "Message was correct.");
     client.verify(list);
     client.clear(list);
   }
